@@ -1,0 +1,64 @@
+<!--
+Written by: Nicholas Cockcroft
+Date: October 10, 2018
+Course: Web Application Development
+
+Assignment: Project 1
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Project 1</title>
+  <style type="text/css">
+    table {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+
+<body>
+  <form action="/mailer" method=POST>
+    <table>
+    <td>
+
+    <div>
+      <p><input type="radio" name="prefixRadio" id="prefixMr" value="Mr" checked>Mr.
+      <input type="radio" name = "prefixRadio" id="prefixMrs" value="Mrs">Mrs.
+      <input type="radio" name = "prefixRadio" id="prefixMs" value="Ms">Ms.
+      <input type="radio" name = "prefixRadio" id="prefixDr" value="Dr">Dr.</p>
+    </div>
+
+    First Name: <input type="text" name="firstName" id="textFirstName" required autofocus>
+    Last Name: <input type="text" name="lastName" id="textLastName" required><br><br>
+
+    Street: <input type="text" name="street" id="textStree">
+    City: <input type="text" name="city" id="textCity"><br><br>
+
+    State <select name="select" id="selectState">
+      <option value="NJ">NJ</option>
+      <option value="NY">NY</option>
+      <option value="PA">PA</option>
+      <option value="CT">CT</option>
+    </select>
+
+    Zip: <input type="text" name="zip" id="textZip"><br><br>
+
+    Phone: <input type="text" name="phone" id="textPhone"><br><br>
+
+    Email: <input type="text" name="email" id="textEmail"><br><br>
+
+    How may we contact you? <input type="checkbox" name="contact" id="checkBoxContact" value="Phone"> Phone
+    <input type="checkbox" name="contact" value="Mail"> Mail
+    <input type="checkbox" name="contact" value="Email"> Email
+    <input type="checkbox" name="contact" value="Any" checked>Any<br><br>
+
+  </td>
+  </table>
+
+    <input type="submit" value="Send me spam forever!">
+
+  </form>
+
+
+</body>
+</html>
