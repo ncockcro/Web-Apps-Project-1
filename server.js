@@ -21,9 +21,6 @@ var ejs = require("ejs");
 let allContacts = new Array();
 let contactCount = 0;
 
-let contactObject = new Object();
-
-
 var app = connect()
   .use(logger('dev'))
   .use(serve_static('public'))
@@ -57,30 +54,16 @@ function process_post(req, res) {
   		var post =  qs.parse(body);
 
     let i = 0;
-    console.log(JSON.stringify(post));
 		for ( q in post ) {
       contactInformation[i] = post[q];
 			console.log(q + " -> " + post[q]);
-			// response += ("<p> " + q + "->" + post[q] + "</p>");
       i++;
 		}
 
-    contactObject.salutation = contactInformation[0];
-    contactObject.firstName = contactInformation[1];
-    contactObject.lastName = contactInformation[2];
-    contactObject.address = contactInformation[3];
-    contactObject.city = contactInformation[4];
-    contactObject.state = contactInformation[5];
-    contactObject.zip = contactInformation[6];
-    contactObject.phone = contactInformation[7];
-    contactObject.email = contactInformation[8];
-    contactObject.contact = contactInformation[9];
-
-
-    console.log(contactCount);
+    // Once all of the information is collected in an array, put that array into
+    // the array which contains all of the contacts for the contacts page
     allContacts[contactCount] = contactInformation;
     contactCount++;
-    console.log(contactCount);
 
     // Building the response for the new html page which contains the contact information the user typed in
     response += ("<p>" + "Name: " + contactInformation[0] + " " + contactInformation[1] + " " + contactInformation[2] + "</p>");
@@ -90,7 +73,7 @@ function process_post(req, res) {
       + contactInformation[6] + "</p>");
     }
     else {
-      response += ("<p>Address:</p>");
+      response += ("<p>Address: No full address</p>");
     }
 
     // Now cycling through the last index of the contact information and determining which check boxes they clicked
@@ -136,21 +119,26 @@ function process_post(req, res) {
 
     // Output for the phone number
     if(canContactPhone === true) {
-      response += ("<p>" + "Contact by Phone: (");
-      for(let j = 0; j < 3; j++) {
-        response += contactInformation[7][j];
+      if(contactInformation[7][0] != undefined) {
+        response += ("<p>" + "Contact by Phone: (");
+        for(let j = 0; j < 3; j++) {
+          response += contactInformation[7][j];
+        }
+
+        response += (") ");
+
+        for(let j = 3; j < 6; j++) {
+          response += contactInformation[7][j];
+        }
+
+        response += ("-");
+
+        for(let j = 6; j < contactInformation.length; j++) {
+          response += (contactInformation[7][j]);
+        }
       }
-
-      response += (") ");
-
-      for(let j = 3; j < 6; j++) {
-        response += contactInformation[7][j];
-      }
-
-      response += ("-");
-
-      for(let j = 6; j < contactInformation.length; j++) {
-        response += (contactInformation[7][j]);
+      else {
+        response += ("<p>" + "Contact by Phone: No phone number provided" + "</p>");
       }
     }
     else {
@@ -159,8 +147,13 @@ function process_post(req, res) {
 
     // Output for if they can be mailed information
     if(canContactMail === true) {
-      response += ("<p>" + "Contact by Mail: Yes" + "</p>");
-      canContact = false;
+      if(contactInformation[3] != "" && contactInformation[4] != "") {
+        response += ("<p>" + "Contact by Mail: Yes" + "</p>");
+        canContact = false;
+      }
+      else {
+        response += ("<p>" + "Contact by Mail: No address provided" + "</p>");
+      }
     }
     else {
       response += ("<p>" + "Contact by Mail: No" + "</p>");
@@ -168,15 +161,22 @@ function process_post(req, res) {
 
     // Output for email address
     if(canContactEmail === true) {
-      response += ("<p>" + "Contact by Email: <a href=mailto:contactInformation[8]>" +  contactInformation[8] + "</p>");
+      if(contactInformation[8][0] != undefined) {
+        response += ("<p>" + "Contact by Email: <a href=mailto:contactInformation[8]>" +  contactInformation[8] + "</a></p>");
+      }
+      else {
+        response += ("<p>" + "Contact by Email: No email address provided" + "</p>");
+      }
     }
     else {
     response += ("<p>" + "Contact by Email: No" + "</p>");
   }
 
+
+    // Putting a link to the all contacts page
+    response += "<p>Click <a href = \"/contacts\">here</a> to see a list of all contacts.</p>";
 		response += "</strong></body></html>";
 
-    response += "<p><a href = \"/contacts\">All Contacts</a></p>";
 		res.end(response);
   	});
 }
