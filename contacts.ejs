@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Contacs Page</title>
+    <style type="text/css">
+      table, th, td {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+
+  <body>
+    <table>
+      <caption><h1><strong>Contacts Page<strong></h1></caption>
+      <thead>
+        <tr>
+          <th> Salutation</th>
+          <th> First Name</th>
+          <th> Last Name </th>
+          <th> Address </th>
+          <th> City </th>
+          <th> State </th>
+          <th> Zip Code </th>
+          <th> Phone Number </th>
+          <th> Email </th>
+          <th> Method of Contact </th>
+
+        </tr>
+      </thead>
+      <tbody>
+    <%for(let i = 0; i < allContacts.length; i++) {%>
+      <%let currentContact = allContacts[i]; %>
+        <tr>
+        <td> <%= currentContact[0];%></td>
+        <td> <%= currentContact[1];%></td>
+        <td> <%= currentContact[2];%></td>
+        <td> <%= currentContact[3];%></td>
+        <td> <%= currentContact[4];%></td>
+        <td> <%= currentContact[5];%></td>
+        <td> <%= currentContact[6];%></td>
+        <td> <%= currentContact[7];%></td>
+        <td> <%= currentContact[8];%></td>
+        <td> <%= currentContact[9];%></td>
+      </tr>
+    <% } %>
+    </tbody>
+  </table>
+  </body>
+
+</html>

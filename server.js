@@ -15,9 +15,14 @@ var connect = require("connect");
 var logger = require("morgan");
 var serve_static = require("serve-static");
 var http = require("http");
+var ejs = require("ejs");
 
 // Global contact array
-let contactInformation = new Array();
+let allContacts = new Array();
+let contactCount = 0;
+
+let contactObject = new Object();
+
 
 var app = connect()
   .use(logger('dev'))
@@ -25,7 +30,6 @@ var app = connect()
   .use(serve)
 
 http.createServer(app).listen(3000);
-
 
 
 function serve (req, res) {
@@ -43,6 +47,7 @@ function serve (req, res) {
 
 function process_post(req, res) {
 	var body = "";
+  let contactInformation = new Array();
 	req.on('data', function (chunk) {
 	   	body += chunk;
 	});
@@ -59,6 +64,23 @@ function process_post(req, res) {
 			// response += ("<p> " + q + "->" + post[q] + "</p>");
       i++;
 		}
+
+    contactObject.salutation = contactInformation[0];
+    contactObject.firstName = contactInformation[1];
+    contactObject.lastName = contactInformation[2];
+    contactObject.address = contactInformation[3];
+    contactObject.city = contactInformation[4];
+    contactObject.state = contactInformation[5];
+    contactObject.zip = contactInformation[6];
+    contactObject.phone = contactInformation[7];
+    contactObject.email = contactInformation[8];
+    contactObject.contact = contactInformation[9];
+
+
+    console.log(contactCount);
+    allContacts[contactCount] = contactInformation;
+    contactCount++;
+    console.log(contactCount);
 
     // Building the response for the new html page which contains the contact information the user typed in
     response += ("<p>" + "Name: " + contactInformation[0] + " " + contactInformation[1] + " " + contactInformation[2] + "</p>");
@@ -153,6 +175,8 @@ function process_post(req, res) {
   }
 
 		response += "</strong></body></html>";
+
+    response += "<p><a href = \"/contacts\">All Contacts</a></p>";
 		res.end(response);
   	});
 }
@@ -166,6 +190,20 @@ function process_get(req, res) {
     res.writeHead(302, {Location: "../index.html"});
     res.end();
     return;
+  }
+
+  if(req.url == "/contacts") {
+    var model = {"allContacts" : allContacts};
+    ejs.renderFile("contacts.ejs", model,
+        function(err, result) {
+            if(!err) {
+              res.end(result);
+            }
+            else {
+              console.log(err);
+              res.end("An error occured.");
+            }
+        });
   }
 
 	var query = url_parts.query;
