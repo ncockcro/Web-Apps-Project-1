@@ -50,7 +50,6 @@ function process_post(req, res) {
 	});
 	req.on('end', function() {
   		qs = require('querystring');
-  		var response = "<html><body><strong>Contact Information Submitted";
   		var post =  qs.parse(body);
 
     let i = 0;
@@ -64,17 +63,6 @@ function process_post(req, res) {
     // the array which contains all of the contacts for the contacts page
     allContacts[contactCount] = contactInformation;
     contactCount++;
-
-    // Building the response for the new html page which contains the contact information the user typed in
-    response += ("<p>" + "Name: " + contactInformation[0] + " " + contactInformation[1] + " " + contactInformation[2] + "</p>");
-
-    if(contactInformation[3] !== "" && contactInformation[4] !== "") {
-      response += ("<p>" + "Address: " + contactInformation[3] + ", " + contactInformation[4] + ", " + contactInformation[5] + " "
-      + contactInformation[6] + "</p>");
-    }
-    else {
-      response += ("<p>Address: No full address</p>");
-    }
 
     // Now cycling through the last index of the contact information and determining which check boxes they clicked
     let canContactPhone = false;
@@ -98,21 +86,23 @@ function process_post(req, res) {
     }
     // Otherwise, we will have to cycle through the last column and see which ones they clicked
     else {
-      for(let j = 0; j < contactInformation[9].length; j++) {
+      if(contactInformation[9] != undefined) {
+        for(let j = 0; j < contactInformation[9].length; j++) {
 
-        if(contactInformation[9][j] == "Any") {
-          canContactPhone = true;
-          canContactMail = true;
-          canContactEmail = true;
-        }
-        if(contactInformation[9][j] == "Phone") {
-          canContactPhone = true;
-        }
-        if(contactInformation[9][j] == "Mail") {
-          canContactMail = true;
-        }
-        if(contactInformation[9][j] == "Email") {
-          canContactEmail = true;
+          if(contactInformation[9][j] == "Any") {
+            canContactPhone = true;
+            canContactMail = true;
+            canContactEmail = true;
+          }
+          if(contactInformation[9][j] == "Phone") {
+            canContactPhone = true;
+          }
+          if(contactInformation[9][j] == "Mail") {
+            canContactMail = true;
+          }
+          if(contactInformation[9][j] == "Email") {
+            canContactEmail = true;
+          }
         }
       }
     }
@@ -120,65 +110,69 @@ function process_post(req, res) {
     // Output for the phone number
     if(canContactPhone === true) {
       if(contactInformation[7][0] != undefined) {
-        response += ("<p>" + "Contact by Phone: (");
+        let tempPhone = ("(");
+
         for(let j = 0; j < 3; j++) {
-          response += contactInformation[7][j];
+          tempPhone += contactInformation[7][j];
         }
 
-        response += (") ");
+        tempPhone += (") ");
 
         for(let j = 3; j < 6; j++) {
-          response += contactInformation[7][j];
+          tempPhone += contactInformation[7][j];
         }
 
-        response += ("-");
+        tempPhone += ("-");
 
         for(let j = 6; j < contactInformation.length; j++) {
-          response += (contactInformation[7][j]);
+          tempPhone += (contactInformation[7][j]);
         }
+        contactInformation[7] = tempPhone;
       }
       else {
-        response += ("<p>" + "Contact by Phone: No phone number provided" + "</p>");
+        contactInformation[7] = ("No phone number provided");
       }
     }
     else {
-      response += ("<p>" + "Contact by Phone: No" + "</p>");
+      contactInformation[7] = ("No");
     }
 
     // Output for if they can be mailed information
     if(canContactMail === true) {
       if(contactInformation[3] != "" && contactInformation[4] != "") {
-        response += ("<p>" + "Contact by Mail: Yes" + "</p>");
+        contactInformation[9] = ("Yes");
         canContact = false;
       }
       else {
-        response += ("<p>" + "Contact by Mail: No address provided" + "</p>");
+        contactInformation[9] = ("No address provided");
       }
     }
     else {
-      response += ("<p>" + "Contact by Mail: No" + "</p>");
+      contactInformation[9] = ("No");
     }
 
     // Output for email address
     if(canContactEmail === true) {
-      if(contactInformation[8][0] != undefined) {
-        response += ("<p>" + "Contact by Email: <a href=mailto:contactInformation[8]>" +  contactInformation[8] + "</a></p>");
-      }
-      else {
-        response += ("<p>" + "Contact by Email: No email address provided" + "</p>");
+      if(contactInformation[8] == "") {
+        contactInformation[8] = ("No email address provided");
       }
     }
     else {
-    response += ("<p>" + "Contact by Email: No" + "</p>");
+    contactInformation[8] = ("No");
   }
 
-
-    // Putting a link to the all contacts page
-    response += "<p>Click <a href = \"/contacts\">here</a> to see a list of all contacts.</p>";
-		response += "</strong></body></html>";
-
-		res.end(response);
-  	});
+      var model = {"contactInformation" : contactInformation};
+      ejs.renderFile("singleContact.ejs", model,
+          function(err, result) {
+              if(!err) {
+                res.end(result);
+              }
+              else {
+                console.log(err);
+                res.end("An error occured.");
+              }
+          });
+});
 }
 
 function process_get(req, res) {
